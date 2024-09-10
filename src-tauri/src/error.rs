@@ -23,6 +23,8 @@ pub enum Error {
     ReqwestBadResponse(String),
     XmlBadFormat,
     XmlDeserialize(String),
+    Model(String),
+    // Controller(String),
     // Xml(XmlDeError)
 }
 
