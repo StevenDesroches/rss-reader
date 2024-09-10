@@ -2,12 +2,17 @@ BEGIN;
 CREATE TABLE article (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `content` TEXT);
 CREATE TABLE feed (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT, `url` TEXT);
 CREATE TABLE category (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `parent_id` INTEGER, `title` TEXT);
+
 CREATE TABLE author (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT, `email` TEXT UNIQUE, `uri` TEXT);
 CREATE UNIQUE INDEX index_author_email ON `author` (`email`);
 CREATE TABLE article_author_xref (`article_id` INTEGER REFERENCES `article`(`id`), `author_id` INTEGER REFERENCES `author`(`id`));
+
 CREATE INDEX idx_article_author_xref ON `article_author_xref` (`article_id`, `author_id`);
 CREATE TABLE feed_article_xref (`feed_id` INTEGER REFERENCES `feed`(`id`), `article_id` INTEGER REFERENCES `article`(`id`));
 CREATE TABLE feed_author_xref (`feed_id` INTEGER REFERENCES `feed`(`id`), `author_id` INTEGER REFERENCES `author`(`id`));
 CREATE INDEX idx_feed_article_xref ON `feed_article_xref` (`feed_id`, `article_id`);
 CREATE INDEX idx_feed_author_xref ON `feed_author_xref` (`feed_id`, `author_id`);
+
+CREATE TABLE feed_category_xref (`feed_id` INTEGER REFERENCES `feed`(`id`), `category_id` INTEGER REFERENCES `category`(`id`));
+CREATE INDEX idx_feed_category_xref ON `feed_category_xref` (`feed_id`, `category_id`);
 COMMIT;
