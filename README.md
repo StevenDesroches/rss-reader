@@ -1,0 +1,1 @@
+RSS Reader using Tauri + SvelteKit

@@ -1,0 +1,120 @@
+<script>
+    import "$styles/global.scss";
+    import { json } from "@sveltejs/kit";
+
+    // import FileTree from "$lib/components/FileTree/FileTree.svelte";
+    // import Button from "$lib/components/Button/Button.svelte";
+    // import Dialog from "$lib/components/Dialog/Dialog.svelte";
+
+    import { invoke } from "@tauri-apps/api/core";
+
+    export let data;
+
+    let feedUrl = "";
+    let feeds = [];
+
+    // async function addFeedUrl() {
+    //     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    //     await invoke("add_feed", { url: feedUrl });
+    //     feeds = await invoke("get_feed");
+    //     console.log('feeds',feeds);
+    // }
+
+    import { selectedFeed } from "$stores/stores.js";
+    function selectFeed(feedId){
+        selectedFeed.set(feedId);
+    }
+
+    $: feedTitle = "";
+    let feedUrlToFetch = "";
+    async function fetchFeed() {
+        let feed = await invoke("fetch_feed", { url: feedUrlToFetch });
+        if (feed && feed.title) feedTitle = feed.title;
+        console.log("feed", feed);
+    }
+    
+    async function addFeed() {
+        await invoke("add_feed", { url: feedUrlToFetch, title: feedTitle});
+    }
+    
+    // async function feedDisplayArticles(feedId){
+    //     await invoke("get_articles_for_feed", { feed_id: feedId});
+    // }
+
+
+    let dialog;
+</script>
+
+<div class="grid">
+    <div class="header">header</div>
+    <div class="sidebar">
+        {#if data && data.feeds}
+            <ul>
+                {#each data.feeds as feed}
+                    <li>
+                        <!-- <button on:click={selectFeed(feedTitle)}> -->
+                        <button on:click={selectFeed(feed.id)}>
+                            {feed.title}
+                        </button>
+                    </li>
+                {/each}
+            </ul>
+        {/if}
+
+        <!-- <form class="row" on:submit|preventDefault={addFeedUrl}>
+            <input
+                id="greet-input"
+                placeholder="Enter a name..."
+                bind:value={feedUrl}
+            />
+            <button type="submit">Greet</button>
+        </form> -->
+
+        <dialog bind:this={dialog}>
+            <button on:click={dialog.close()}>x</button>
+            <form method="dialog" on:submit={addFeed}>
+                <p>url</p>
+                <input
+                    type="text"
+                    name="url"
+                    bind:value={feedUrlToFetch}
+                    on:input={fetchFeed}
+                />
+                <p>title</p>
+                <input type="text" name="title" value={feedTitle} />
+                <button>OK</button>
+            </form>
+        </dialog>
+        <button on:click={dialog.showModal()}>Open It!</button>
+    </div>
+    <div class="main">
+        <slot />
+    </div>
+</div>
+
+<style>
+    .grid {
+        height: 100%;
+        display: grid;
+        grid-template-columns: minmax(150px, auto) 8fr 2fr;
+        grid-template-rows: minmax(50px, auto) 9fr 2fr;
+        grid-template-areas:
+            "hd hd hd"
+            "side main main"
+            "side main main";
+    }
+
+    .header {
+        background-color: blue;
+        grid-area: hd;
+    }
+
+    .sidebar {
+        background-color: teal;
+        grid-area: side;
+    }
+    .main {
+        background-color: red;
+        grid-area: main;
+    }
+</style>
