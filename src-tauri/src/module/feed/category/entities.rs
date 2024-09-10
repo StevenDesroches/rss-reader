@@ -1,5 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use crate::module::feed::entities::Feed;
 
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Category {
     pub id: i32,
     pub title: String,

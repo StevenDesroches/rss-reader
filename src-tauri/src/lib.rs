@@ -27,6 +27,7 @@ pub fn run() {
             module::feed::api::get_all_feeds,
             module::feed::api::get_articles_for_feed,
             module::feed::category::api::add_category,
+            module::feed::category::api::get_all_categories,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
