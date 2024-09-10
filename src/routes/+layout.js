@@ -9,10 +9,9 @@ export const ssr = false;
 import { invoke } from "@tauri-apps/api/core";
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load() {
-    let feeds = await invoke("get_all_feeds");
-    console.log('feeds',feeds);
     return {
-        feeds: await invoke("get_all_feeds")
+        feeds: await invoke("get_all_feeds"),
+        categories: await invoke("get_all_categories")
     };
 }
 

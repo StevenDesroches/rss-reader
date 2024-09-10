@@ -21,7 +21,7 @@
     // }
 
     import { selectedFeed } from "$stores/stores.js";
-    function selectFeed(feedId){
+    function selectFeed(feedId) {
         selectedFeed.set(feedId);
     }
 
@@ -32,19 +32,16 @@
         if (feed && feed.title) feedTitle = feed.title;
         console.log("feed", feed);
     }
-    
+
     async function addFeed() {
-        await invoke("add_feed", { url: feedUrlToFetch, title: feedTitle});
+        await invoke("add_feed", { url: feedUrlToFetch, title: feedTitle });
     }
-    
-    
+
     $: categoryTitle = "";
-    async function addCategory(){
-        console.log('categoryTitle', categoryTitle);
-        await invoke("add_category", { title: categoryTitle});
+    async function addCategory() {
+        console.log("categoryTitle", categoryTitle);
+        await invoke("add_category", { title: categoryTitle });
     }
-    
-  
 
     let feedDialog;
     let categoryDialog;
@@ -53,17 +50,32 @@
 <div class="grid">
     <div class="header">header</div>
     <div class="sidebar">
-        {#if data && data.feeds}
-            <ul>
-                {#each data.feeds as feed}
-                    <li>
-                        <!-- <button on:click={selectFeed(feedTitle)}> -->
-                        <button on:click={selectFeed(feed.id)}>
-                            {feed.title}
-                        </button>
-                    </li>
-                {/each}
-            </ul>
+        <p>Categories</p>
+        {#if data}
+            {#if data.categories}
+                <ul>
+                    {#each data.categories as category}
+                        <li>
+                            <button>
+                                {category.title}
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
+            <p>Feeds</p>
+            {#if data.feeds}
+                <ul>
+                    {#each data.feeds as feed}
+                        <li>
+                            <!-- <button on:click={selectFeed(feedTitle)}> -->
+                            <button on:click={selectFeed(feed.id)}>
+                                {feed.title}
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
         {/if}
 
         <!-- <form class="row" on:submit|preventDefault={addFeedUrl}>
@@ -92,10 +104,6 @@
         </dialog>
         <button on:click={feedDialog.showModal()}>FEED</button>
 
-
-
-
-
         <dialog bind:this={categoryDialog}>
             <button on:click={categoryDialog.close()}>x</button>
             <form method="dialog" on:submit={addCategory}>
@@ -105,7 +113,6 @@
             </form>
         </dialog>
         <button on:click={categoryDialog.showModal()}>CATEGORY</button>
-
     </div>
     <div class="main">
         <slot />
