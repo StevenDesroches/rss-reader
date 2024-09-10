@@ -37,12 +37,17 @@
         await invoke("add_feed", { url: feedUrlToFetch, title: feedTitle});
     }
     
-    // async function feedDisplayArticles(feedId){
-    //     await invoke("get_articles_for_feed", { feed_id: feedId});
-    // }
+    
+    $: categoryTitle = "";
+    async function addCategory(){
+        console.log('categoryTitle', categoryTitle);
+        await invoke("add_category", { title: categoryTitle});
+    }
+    
+  
 
-
-    let dialog;
+    let feedDialog;
+    let categoryDialog;
 </script>
 
 <div class="grid">
@@ -70,8 +75,8 @@
             <button type="submit">Greet</button>
         </form> -->
 
-        <dialog bind:this={dialog}>
-            <button on:click={dialog.close()}>x</button>
+        <dialog bind:this={feedDialog}>
+            <button on:click={feedDialog.close()}>x</button>
             <form method="dialog" on:submit={addFeed}>
                 <p>url</p>
                 <input
@@ -81,11 +86,26 @@
                     on:input={fetchFeed}
                 />
                 <p>title</p>
-                <input type="text" name="title" value={feedTitle} />
+                <input type="text" name="title" bind:value={feedTitle} />
                 <button>OK</button>
             </form>
         </dialog>
-        <button on:click={dialog.showModal()}>Open It!</button>
+        <button on:click={feedDialog.showModal()}>FEED</button>
+
+
+
+
+
+        <dialog bind:this={categoryDialog}>
+            <button on:click={categoryDialog.close()}>x</button>
+            <form method="dialog" on:submit={addCategory}>
+                <p>title</p>
+                <input type="text" name="title" bind:value={categoryTitle} />
+                <button>OK</button>
+            </form>
+        </dialog>
+        <button on:click={categoryDialog.showModal()}>CATEGORY</button>
+
     </div>
     <div class="main">
         <slot />
