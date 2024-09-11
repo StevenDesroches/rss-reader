@@ -4,7 +4,7 @@ use super::entities::Feed;
 use crate::error::{Error, Result};
 use crate::shared::database::{Db, IDb};
 
-pub struct FeedModel {
+pub(super) struct FeedModel {
     db: Db,
 }
 

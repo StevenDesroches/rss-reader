@@ -4,13 +4,13 @@ use crate::module::feed::entities::Feed;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Category {
-    pub id: i32,
-    pub title: String,
-    pub parent_id: Option<i32>,
-    pub feeds: Option<Vec<Feed>>,
+    pub(super) id: i32,
+    pub(super) title: String,
+    pub(super) parent_id: Option<i32>,
+    pub(super) feeds: Option<Vec<Feed>>,
 }
 
-pub struct CategoryBuilder {
+pub(super) struct CategoryBuilder {
     id: Option<i32>,
     title: Option<String>,
     parent_id: Option<i32>,
@@ -18,7 +18,7 @@ pub struct CategoryBuilder {
 }
 
 impl Category {
-    pub fn builder() -> CategoryBuilder {
+    pub(super) fn builder() -> CategoryBuilder {
         CategoryBuilder {
             id: None,
             title: None,

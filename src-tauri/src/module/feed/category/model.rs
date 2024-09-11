@@ -3,7 +3,7 @@ use crate::shared::database::{Db, IDb};
 
 use super::entities::Category;
 
-pub struct CategoryModel {
+pub(super) struct CategoryModel {
     db: Db,
 }
 

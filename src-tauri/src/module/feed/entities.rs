@@ -13,15 +13,15 @@ enum FeedType {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct FeedArticle {
-    pub id: Option<i32>,
-    pub title: String,
-    pub link: Option<String>,
-    pub content: String,
-    pub pub_date: Option<String>,
+    pub(super) id: Option<i32>,
+    pub(super) title: String,
+    pub(super) link: Option<String>,
+    pub(super) content: String,
+    pub(super) pub_date: Option<String>,
 }
 
 impl FeedArticle {
-    pub fn from_model(id: i32, title: String, content: String) -> Self {
+    pub(super) fn from_model(id: i32, title: String, content: String) -> Self {
         Self {
             id: Some(id),
             title: title,
@@ -31,7 +31,7 @@ impl FeedArticle {
         }
     }
 
-    pub fn from_rss(item: Item) -> Self {
+    pub(super) fn from_rss(item: Item) -> Self {
         Self {
             id: None,
             title: item.title,
@@ -41,7 +41,7 @@ impl FeedArticle {
         }
     }
 
-    pub fn from_atom(entry: AtomEntry) -> Self {
+    pub(super) fn from_atom(entry: AtomEntry) -> Self {
         Self {
             id: None,
             title: entry.title,
@@ -55,16 +55,16 @@ impl FeedArticle {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Feed {
-    pub id: Option<i32>,
-    pub title: String,
-    pub xml_url: Url,
-    pub link: Option<Url>,
-    pub description: Option<String>,
-    pub articles: Vec<FeedArticle>,
+    pub(super) id: Option<i32>,
+    pub(super) title: String,
+    pub(super) xml_url: Url,
+    pub(super) link: Option<Url>,
+    pub(super) description: Option<String>,
+    pub(super) articles: Vec<FeedArticle>,
 }
 
 impl Feed {
-    pub fn from_model(id: i32, title: String, xml_url: Url) -> Self {
+    pub(super) fn from_model(id: i32, title: String, xml_url: Url) -> Self {
         Self {
             id: Some(id),
             title: title,
@@ -75,7 +75,7 @@ impl Feed {
         }
     }
 
-    pub fn from_rss(rss: RssFeed) -> Self {
+    pub(super) fn from_rss(rss: RssFeed) -> Self {
         Self {
             id: None,
             title: rss.channel.title,
@@ -91,7 +91,7 @@ impl Feed {
         }
     }
 
-    pub fn from_atom(atom: AtomFeed) -> Self {
+    pub(super) fn from_atom(atom: AtomFeed) -> Self {
         Self {
             id: None,
             title: atom.title,
@@ -107,7 +107,7 @@ impl Feed {
         }
     }
 
-    pub async fn from_url(url: Url) -> Result<Self> {
+    pub(super) async fn from_url(url: Url) -> Result<Self> {
         let http = crate::service::http::HttpReqwest {};
 
         let content = http
@@ -171,7 +171,7 @@ impl Feed {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct AtomFeed {
+pub(super) struct AtomFeed {
     pub title: String,
     pub subtitle: Option<String>,
     // pub links: Vec<AtomLink>,
@@ -185,7 +185,7 @@ pub struct AtomFeed {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct AtomEntry {
+pub(super) struct AtomEntry {
     pub title: String,
     #[serde(rename = "link", default)]
     pub links: Option<Vec<AtomLink>>,
@@ -201,7 +201,7 @@ pub struct AtomEntry {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct AtomLink {
+pub(super) struct AtomLink {
     #[serde(rename = "@href", default)]
     pub href: Option<String>,
     #[serde(rename = "@rel", default)]
@@ -213,14 +213,14 @@ pub struct AtomLink {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct AtomPerson {
+pub(super) struct AtomPerson {
     pub name: Option<String>,
     pub email: Option<String>,
     pub uri: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct AtomContent {
+pub(super) struct AtomContent {
     #[serde(rename = "@type", default)]
     pub content_type: Option<String>,
     #[serde(rename = "$value")]
@@ -238,13 +238,13 @@ pub struct AtomContent {
 // use chrono::{DateTime, FixedOffset};
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct RssFeed {
+pub(super) struct RssFeed {
     pub channel: Channel,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Channel {
+pub(super) struct Channel {
     pub title: String,
     // pub link: String,
     pub description: Option<String>,
@@ -308,7 +308,7 @@ pub struct Channel {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Item {
+pub(super) struct Item {
     pub title: String,
     pub link: Option<String>,
     pub description: String,
@@ -325,7 +325,7 @@ pub struct Item {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Category {
+pub(super) struct Category {
     pub domain: Option<String>,
     #[serde(rename = "$value")]
     pub value: Option<String>,
@@ -333,7 +333,7 @@ pub struct Category {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Enclosure {
+pub(super) struct Enclosure {
     pub url: Option<String>,
     pub length: Option<i32>,
     #[serde(rename = "type")]
@@ -342,7 +342,7 @@ pub struct Enclosure {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Guid {
+pub(super) struct Guid {
     #[serde(rename = "@isPermaLink", default)]
     pub is_permalink: Option<bool>,
     #[serde(rename = "$value")]
@@ -351,7 +351,7 @@ pub struct Guid {
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Source {
+pub(super) struct Source {
     pub url: Option<String>,
     #[serde(rename = "$value")]
     pub value: Option<String>,

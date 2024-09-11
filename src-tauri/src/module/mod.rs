@@ -1,1 +1,1 @@
-pub mod feed;
+pub(super) mod feed;

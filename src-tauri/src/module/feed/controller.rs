@@ -3,7 +3,7 @@ use crate::error::Result;
 use super::entities::{Feed, FeedArticle};
 use super::model::FeedModel;
 use crate::shared::types::Url;
-pub struct FeedController {}
+pub(super) struct FeedController {}
 
 impl FeedController {
     pub fn new() -> Self {

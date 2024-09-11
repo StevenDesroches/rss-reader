@@ -3,7 +3,7 @@ use crate::error::Result;
 use super::entities::Category;
 use super::model::CategoryModel;
 
-pub struct CategoryController {}
+pub(super) struct CategoryController {}
 
 impl CategoryController {
     pub fn new() -> Self {
