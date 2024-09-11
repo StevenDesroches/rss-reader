@@ -6,7 +6,7 @@ use crate::shared::types::Url;
 
 #[derive(Debug, PartialEq)]
 enum FeedType {
-    RSS,
+    Rss,
     Atom,
     Unknown,
 }
@@ -24,9 +24,9 @@ impl FeedArticle {
     pub(super) fn from_model(id: i32, title: String, content: String) -> Self {
         Self {
             id: Some(id),
-            title: title,
+            title,
             link: None,
-            content: content,
+            content,
             pub_date: None,
         }
     }
@@ -35,7 +35,7 @@ impl FeedArticle {
         Self {
             id: None,
             title: item.title,
-            link: None, // RSS link handling
+            link: None, // rss link handling
             content: item.description,
             pub_date: item.pub_date,
         }
@@ -67,8 +67,8 @@ impl Feed {
     pub(super) fn from_model(id: i32, title: String, xml_url: Url) -> Self {
         Self {
             id: Some(id),
-            title: title,
-            xml_url: xml_url,
+            title,
+            xml_url,
             link: None,
             description: None,
             articles: Vec::new(),
@@ -80,8 +80,8 @@ impl Feed {
             id: None,
             title: rss.channel.title,
             xml_url: String::new(),
-            link: None,        // RSS link handling
-            description: None, //rss.channel.description,
+            link: None,        // Rss link handling
+            description: None, //Rss.channel.description,
             articles: rss
                 .channel
                 .items
@@ -119,7 +119,7 @@ impl Feed {
 
         let mut feed: Self = match Self::determine_feed_type(reader) {
             FeedType::Unknown => Err(Error::XmlBadFormat)?,
-            FeedType::RSS => {
+            FeedType::Rss => {
                 let rss: RssFeed = quick_xml::de::from_str(&content)
                     .map_err(|e| Error::XmlDeserialize(e.to_string()))?;
                 Feed::from_rss(rss)
@@ -142,7 +142,7 @@ impl Feed {
             match reader.read_event_into(&mut buf) {
                 Ok(quick_xml::events::Event::Start(ref e)) => {
                     return match e.name().as_ref() {
-                        b"rss" => FeedType::RSS,
+                        b"Rss" => FeedType::Rss,
                         b"feed" => FeedType::Atom,
                         _ => FeedType::Unknown,
                     };

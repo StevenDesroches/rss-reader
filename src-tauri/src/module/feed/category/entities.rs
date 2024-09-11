@@ -44,7 +44,7 @@ impl CategoryBuilder {
         self
     }
 
-    pub fn feeds(mut self, feeds: Vec<Feed>) -> Self {
+    pub fn _feeds(mut self, feeds: Vec<Feed>) -> Self {
         self.feeds = Some(feeds);
         self
     }

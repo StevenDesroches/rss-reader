@@ -36,7 +36,7 @@ impl Db {
     pub fn setup() {
         let path = "db.sqlite";
         if !std::path::Path::exists(std::path::Path::new(&path)) {
-            let connection = Connection::open(&path).expect("error with connection open");
+            let connection = Connection::open(path).expect("error with connection open");
 
             let queries = std::fs::read_to_string("assets/sql/init.sqlite3-query")
                 .expect("sql init file doesn't exists");
