@@ -113,7 +113,7 @@ impl Feed {
         let content = http
             .fetch(&url)
             .await
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            .map_err(|e| Error::Entity(e.to_string()))?;
 
         let reader = quick_xml::Reader::from_str(&content);
 

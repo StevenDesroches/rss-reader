@@ -24,6 +24,8 @@ pub enum Error {
     XmlBadFormat,
     XmlDeserialize(String),
     Model(String),
+    Db(String),
+    Entity(String),
     // Controller(String),
     // Xml(XmlDeError)
 }

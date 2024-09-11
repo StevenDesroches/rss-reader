@@ -29,9 +29,9 @@ impl FeedModel {
         }
     }
 
-    pub fn open(mut self) -> Self {
-        self.db.open();
-        self
+    pub fn open(mut self) -> Result<Self> {
+        self.db.open()?;
+        Ok(self)
     }
 
     pub fn close(mut self) -> Result<()> {
@@ -43,41 +43,41 @@ impl FeedModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Custom("DB NOT OPEN".to_string()))?;
+            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
 
         connection
             .execute(
                 "INSERT INTO feed (title, xml_url) VALUES (?1, ?2)",
                 (feed.title, feed.xml_url),
             )
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            .map_err(|e| Error::Model(e.to_string()))?;
         let feed_id = connection.last_insert_rowid();
 
         {
             let mut article_statement = connection
                 .prepare("INSERT INTO article (title, content) VALUES (?1, ?2)")
-                .map_err(|e| Error::Custom(e.to_string()))?;
+                .map_err(|e| Error::Model(e.to_string()))?;
             let mut xref_statement = connection
                 .prepare("INSERT INTO feed_article_xref (feed_id, article_id) VALUES (?1, ?2)")
-                .map_err(|e| Error::Custom(e.to_string()))?;
+                .map_err(|e| Error::Model(e.to_string()))?;
 
-            // let transaction = connection.transaction().map_err(|e| Error::Custom(e.to_string()))?;
+            // let transaction = connection.transaction().map_err(|e| Error::Model(e.to_string()))?;
             connection
                 .execute("BEGIN TRANSACTION", [])
-                .map_err(|e| Error::Custom(e.to_string()))?;
+                .map_err(|e| Error::Model(e.to_string()))?;
 
             for feed_article in feed.articles {
                 let feed_article_id = article_statement
                     .insert([feed_article.title, feed_article.content])
-                    .map_err(|e| Error::Custom(e.to_string()))?;
+                    .map_err(|e| Error::Model(e.to_string()))?;
                 xref_statement
                     .execute((feed_id, feed_article_id))
-                    .map_err(|e| Error::Custom(e.to_string()))?;
+                    .map_err(|e| Error::Model(e.to_string()))?;
             }
             connection
                 .execute("Commit", [])
-                .map_err(|e| Error::Custom(e.to_string()))?;
-            // transaction.commit().map_err(|e| Error::Custom(e.to_string()))?;
+                .map_err(|e| Error::Model(e.to_string()))?;
+            // transaction.commit().map_err(|e| Error::Model(e.to_string()))?;
         }
 
         Ok(self)
@@ -88,11 +88,11 @@ impl FeedModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Custom("DB NOT OPEN".to_string()))?;
+            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
 
         let mut statement = connection
             .prepare("SELECT * FROM feed;")
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            .map_err(|e| Error::Model(e.to_string()))?;
 
         let rows = statement
             .query_map([], |row| {
@@ -102,12 +102,12 @@ impl FeedModel {
                     row.get::<_, String>(2)?,
                 ))
             })
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            .map_err(|e| Error::Model(e.to_string()))?;
 
         // let feeds: (id, title, xml_url) = rows.collect()?;
         let mut feeds: Vec<(i32, String, String)> = Vec::new();
         for row in rows {
-            feeds.push(row.map_err(|e| Error::Custom(e.to_string()))?);
+            feeds.push(row.map_err(|e| Error::Model(e.to_string()))?);
         }
         Ok(feeds)
     }
@@ -117,7 +117,7 @@ impl FeedModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Custom("DB NOT OPEN".to_string()))?;
+            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
 
         let mut statement = connection
             .prepare(
@@ -132,7 +132,7 @@ impl FeedModel {
                         `id` ASC
                     ",
             )
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            .map_err(|e| Error::Model(e.to_string()))?;
         let rows = statement
             .query_map([feed_id], |row| {
                 Ok((
@@ -141,11 +141,11 @@ impl FeedModel {
                     row.get::<_, String>(2)?,
                 ))
             })
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            .map_err(|e| Error::Model(e.to_string()))?;
 
         let mut articles: Vec<(i32, String, String)> = Vec::new();
         for row in rows {
-            articles.push(row.map_err(|e| Error::Custom(e.to_string()))?);
+            articles.push(row.map_err(|e| Error::Model(e.to_string()))?);
         }
         Ok(articles)
     }

@@ -12,9 +12,9 @@ impl CategoryModel {
         CategoryModel { db: Db::new() }
     }
 
-    pub fn open(mut self) -> Self {
-        self.db.open();
-        self
+    pub fn open(mut self) -> Result<Self> {
+        self.db.open()?;
+        Ok(self)
     }
 
     pub fn close(mut self) -> Result<()> {

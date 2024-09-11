@@ -16,14 +16,14 @@ impl CategoryController {
             None => Category::builder().title(title).build(),
         };
         CategoryModel::new()
-            .open()
+            .open()?
             .insert_category(category)?
             .close()?;
         Ok(())
     }
 
     pub fn get_all(&self) -> Result<Vec<Category>> {
-        let model = CategoryModel::new().open();
+        let model = CategoryModel::new().open()?;
         let mut categories = Vec::new();
 
         let model_categories = model.get_categories()?;
