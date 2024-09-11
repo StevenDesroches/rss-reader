@@ -15,7 +15,7 @@ mod shared;
 pub fn run() {
     tauri::Builder::default()
         .setup(|_| {
-            module::feed::model::FeedModel::setup();
+            shared::database::Db::setup();
             // app.manage(db_connection);
             Ok(())
         })

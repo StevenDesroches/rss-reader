@@ -13,22 +13,6 @@ impl FeedModel {
         FeedModel { db: Db::new() }
     }
 
-    pub fn setup() {
-        let path = "db.sqlite";
-        if !std::path::Path::exists(std::path::Path::new(&path)) {
-            let connection = Connection::open(&path).expect("error with connection open");
-
-            let queries = std::fs::read_to_string("assets/sql/init.sqlite3-query")
-                .expect("sql init file doesn't exists");
-            let queries = queries.as_str();
-
-            connection
-                .execute_batch(queries)
-                .expect("ERROR RUNNING QUERIES");
-            connection.close().expect("ERROR CLOSING");
-        }
-    }
-
     pub fn open(mut self) -> Result<Self> {
         self.db.open()?;
         Ok(self)

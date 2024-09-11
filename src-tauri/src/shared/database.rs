@@ -1,5 +1,5 @@
-use crate::error::Result;
 use crate::error::Error;
+use crate::error::Result;
 use rusqlite::Connection;
 
 pub trait IDb {
@@ -29,5 +29,23 @@ impl IDb for Db {
             connection.close().unwrap();
         }
         Ok(())
+    }
+}
+
+impl Db {
+    pub fn setup() {
+        let path = "db.sqlite";
+        if !std::path::Path::exists(std::path::Path::new(&path)) {
+            let connection = Connection::open(&path).expect("error with connection open");
+
+            let queries = std::fs::read_to_string("assets/sql/init.sqlite3-query")
+                .expect("sql init file doesn't exists");
+            let queries = queries.as_str();
+
+            connection
+                .execute_batch(queries)
+                .expect("ERROR RUNNING QUERIES");
+            connection.close().expect("ERROR CLOSING");
+        }
     }
 }
