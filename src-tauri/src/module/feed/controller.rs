@@ -1,6 +1,7 @@
 use crate::error::Result;
 
-use super::entities::{Feed, FeedArticle};
+use super::article::model::ArticleModel;
+use super::entities::Feed;
 use super::model::FeedModel;
 use crate::shared::types::Url;
 pub(super) struct FeedController {}
@@ -24,7 +25,15 @@ impl FeedController {
             feed.category_id = Some(category_id)
         }
 
-        FeedModel::new().open()?.insert_feed(feed)?.close()?;
+        let feed_model = FeedModel::new().open()?;
+        let feed_id = feed_model.insert_feed(&feed)?;
+        feed_model.close()?;
+
+        ArticleModel::new()
+            .open()?
+            .insert_articles(feed_id, &feed.articles)?
+            .close()?;
+
         Ok(())
     }
 
@@ -39,27 +48,18 @@ impl FeedController {
             .into_iter()
             .map(|i| {
                 let feed = match i.3 {
-                    Some(category_id) =>  Feed::builder().id(i.0).title(i.1).xml_url(i.2).category_id(category_id).build(),
-                    None =>  Feed::builder().id(i.0).title(i.1).xml_url(i.2).build(),
+                    Some(category_id) => Feed::builder()
+                        .id(i.0)
+                        .title(i.1)
+                        .xml_url(i.2)
+                        .category_id(category_id)
+                        .build(),
+                    None => Feed::builder().id(i.0).title(i.1).xml_url(i.2).build(),
                 };
                 feeds.push(feed);
             })
             .collect();
 
         Ok(feeds)
-    }
-
-    pub fn get_articles(&self, feed_id: i32) -> Result<Vec<FeedArticle>> {
-        let model = FeedModel::new().open()?;
-        let mut articles = Vec::new();
-        let model_articles = model.get_articles_for_feed(feed_id)?;
-        model.close()?;
-
-        let _: Vec<_> = model_articles
-            .into_iter()
-            .map(|i| articles.push(FeedArticle::from_model(i.0, i.1, i.2)))
-            .collect();
-
-        Ok(articles)
     }
 }

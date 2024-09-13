@@ -6,8 +6,7 @@
     const selectedFeedSubscribe = selectedFeed.subscribe(async (feedId) => {
         console.log('feedId',feedId);
         if (feedId) {
-            // let articles = await invoke("get_articles_for_feed");
-            let articles = await invoke("get_articles_for_feed", {
+            let articles = await invoke("get_articles_by_feed", {
                 feedId: feedId,
             });
             console.log("articles", articles);

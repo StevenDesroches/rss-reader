@@ -5,3 +5,4 @@ pub(super) mod entities;
 pub mod api;
 
 pub mod category;
+pub mod article;

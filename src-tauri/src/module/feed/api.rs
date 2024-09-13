@@ -1,5 +1,4 @@
 use super::controller::FeedController;
-use super::entities::FeedArticle;
 use super::entities::Feed;
 
 use crate::shared::types::Url;
@@ -27,8 +26,8 @@ pub async fn get_all_feeds() -> Result<Vec<Feed>> {
     Ok(feeds)
 }
 
-#[tauri::command]
-pub async fn get_articles_for_feed(feed_id: i32) -> Result<Vec<FeedArticle>> {
-    let articles = FeedController::new().get_articles(feed_id)?;
-    Ok(articles)
-}
+// #[tauri::command]
+// pub async fn get_articles_for_feed(feed_id: i32) -> Result<Vec<FeedArticle>> {
+//     let articles = FeedController::new().get_articles(feed_id)?;
+//     Ok(articles)
+// }

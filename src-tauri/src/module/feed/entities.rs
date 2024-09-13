@@ -4,53 +4,14 @@ use crate::error::{Error, Result};
 use crate::service::http::IHttp;
 use crate::shared::types::Url;
 
+use super::article::entities::Article;
+
+
 #[derive(Debug, PartialEq)]
 enum FeedType {
     Rss,
     Atom,
     Unknown,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct FeedArticle {
-    pub(super) id: Option<i32>,
-    pub(super) title: String,
-    pub(super) link: Option<String>,
-    pub(super) content: String,
-    pub(super) pub_date: Option<String>,
-}
-
-impl FeedArticle {
-    pub(super) fn from_model(id: i32, title: String, content: String) -> Self {
-        Self {
-            id: Some(id),
-            title,
-            link: None,
-            content,
-            pub_date: None,
-        }
-    }
-
-    pub(super) fn from_rss(item: Item) -> Self {
-        Self {
-            id: None,
-            title: item.title,
-            link: None, // rss link handling
-            content: item.description,
-            pub_date: item.pub_date,
-        }
-    }
-
-    pub(super) fn from_atom(entry: AtomEntry) -> Self {
-        Self {
-            id: None,
-            title: entry.title,
-            // link: entry.link.map(|l| l.href),
-            link: None,
-            content: entry.content.content,
-            pub_date: entry.published,
-        }
-    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -60,7 +21,7 @@ pub struct Feed {
     pub(super) xml_url: Url,
     pub(super) link: Option<Url>,
     pub(super) description: Option<String>,
-    pub(super) articles: Vec<FeedArticle>,
+    pub(super) articles: Vec<Article>,
     pub(super) category_id: Option<i32>,
 }
 
@@ -70,7 +31,7 @@ pub(super) struct FeedBuilder {
     xml_url: Option<Url>,
     link: Option<Url>,
     description: Option<String>,
-    articles: Option<Vec<FeedArticle>>,
+    articles: Option<Vec<Article>>,
     category_id: Option<i32>,
 }
 
@@ -100,7 +61,7 @@ impl FeedBuilder {
         self
     }
 
-    pub fn _articles(mut self, articles: Vec<FeedArticle>) -> Self {
+    pub fn _articles(mut self, articles: Vec<Article>) -> Self {
         self.articles = Some(articles);
         self
     }
@@ -147,7 +108,7 @@ impl Feed {
                 .channel
                 .items
                 .into_iter()
-                .map(FeedArticle::from_rss)
+                .map(Article::from_rss)
                 .collect(),
             category_id: None,
         }
@@ -164,7 +125,7 @@ impl Feed {
             articles: atom
                 .entries
                 .into_iter()
-                .map(FeedArticle::from_atom)
+                .map(Article::from_atom)
                 .collect(),
             category_id: None,
         }
