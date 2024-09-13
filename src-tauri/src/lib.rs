@@ -25,7 +25,6 @@ pub fn run() {
             module::feed::api::fetch_feed,
             module::feed::api::add_feed,
             module::feed::api::get_all_feeds,
-            // module::feed::api::get_articles_for_feed,
             module::feed::category::api::add_category,
             module::feed::category::api::get_all_categories,
             module::feed::article::api::get_articles_by_feed

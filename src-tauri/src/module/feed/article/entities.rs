@@ -38,6 +38,7 @@ impl Article {
         }
     }
 
+    #[allow(private_interfaces)]//TODO: revisit later
     pub fn from_rss(item: Item) -> Self {
         Self {
             id: None,
@@ -48,7 +49,8 @@ impl Article {
             pub_date: item.pub_date,
         }
     }
-
+    
+    #[allow(private_interfaces)]//TODO: revisit later
     pub fn from_atom(entry: AtomEntry) -> Self {
         Self {
             id: None,
