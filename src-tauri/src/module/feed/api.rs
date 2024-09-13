@@ -15,9 +15,9 @@ pub async fn fetch_feed(url: Url) -> Result<Value> {
 }
 
 #[tauri::command]
-pub async fn add_feed(url: Url, title: String) -> Result<()> {
+pub async fn add_feed(url: Url, title: String, category_id: Option<i32>) -> Result<()> {
     let feed_controller = FeedController::new();
-    feed_controller.add(url, title).await?;
+    feed_controller.add(url, title, category_id).await?;
     Ok(())
 }
 

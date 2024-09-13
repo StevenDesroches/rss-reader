@@ -16,9 +16,14 @@ impl FeedController {
     }
 
     ///Add feed to db
-    pub async fn add(&self, url: Url, title: String) -> Result<()> {
+    pub async fn add(&self, url: Url, title: String, category_id: Option<i32>) -> Result<()> {
         let mut feed = Feed::from_url(url).await?;
         feed.title = title;
+
+        if let Some(category_id) = category_id {
+            feed.category_id = Some(category_id)
+        }
+
         FeedModel::new().open()?.insert_feed(feed)?.close()?;
         Ok(())
     }

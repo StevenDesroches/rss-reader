@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::service::http::IHttp;
 use crate::error::{Error, Result};
+use crate::service::http::IHttp;
 use crate::shared::types::Url;
 
 #[derive(Debug, PartialEq)]
@@ -61,6 +61,7 @@ pub struct Feed {
     pub(super) link: Option<Url>,
     pub(super) description: Option<String>,
     pub(super) articles: Vec<FeedArticle>,
+    pub(super) category_id: Option<i32>,
 }
 
 impl Feed {
@@ -72,6 +73,7 @@ impl Feed {
             link: None,
             description: None,
             articles: Vec::new(),
+            category_id: None,
         }
     }
 
@@ -88,6 +90,7 @@ impl Feed {
                 .into_iter()
                 .map(FeedArticle::from_rss)
                 .collect(),
+            category_id: None,
         }
     }
 
@@ -104,6 +107,7 @@ impl Feed {
                 .into_iter()
                 .map(FeedArticle::from_atom)
                 .collect(),
+            category_id: None,
         }
     }
 
@@ -142,7 +146,7 @@ impl Feed {
             match reader.read_event_into(&mut buf) {
                 Ok(quick_xml::events::Event::Start(ref e)) => {
                     return match e.name().as_ref() {
-                        b"Rss" => FeedType::Rss,
+                        b"rss" => FeedType::Rss,
                         b"feed" => FeedType::Atom,
                         _ => FeedType::Unknown,
                     };
@@ -159,15 +163,6 @@ impl Feed {
         FeedType::Unknown
     }
 }
-
-
-
-
-
-
-
-
-
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -226,14 +221,6 @@ pub(super) struct AtomContent {
     #[serde(rename = "$value")]
     pub content: String,
 }
-
-
-
-
-
-
-
-
 
 // use chrono::{DateTime, FixedOffset};
 #[derive(Debug, Deserialize, Serialize)]

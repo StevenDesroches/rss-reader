@@ -62,6 +62,14 @@ impl FeedModel {
             // transaction.commit().map_err(|e| Error::Model(e.to_string()))?;
         }
 
+        if feed.category_id.is_some() {
+            connection
+                .execute(
+                    "INSERT INTO feed_category_xref (feed_id, category_id) VALUES (?1, ?2)",
+                    (feed_id, feed.category_id),
+                )
+                .map_err(|e| Error::Model(e.to_string()))?;
+        }
         Ok(self)
     }
 
@@ -73,7 +81,7 @@ impl FeedModel {
             .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
 
         let mut statement = connection
-            .prepare("SELECT * FROM feed;")
+            .prepare("SELECT feed.*, xref.category_id FROM feed LEFT JOIN feed_category_xref xref on xref.feed_id = feed.id;")
             .map_err(|e| Error::Model(e.to_string()))?;
 
         let rows = statement

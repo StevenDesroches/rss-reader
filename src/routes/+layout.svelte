@@ -26,6 +26,7 @@
     }
 
     $: feedTitle = "";
+    $: feedCategory = null;
     let feedUrlToFetch = "";
     async function fetchFeed() {
         let feed = await invoke("fetch_feed", { url: feedUrlToFetch });
@@ -34,13 +35,16 @@
     }
 
     async function addFeed() {
-        await invoke("add_feed", { url: feedUrlToFetch, title: feedTitle });
+        await invoke("add_feed", { url: feedUrlToFetch, title: feedTitle,  categoryId: feedCategory });
     }
 
     $: categoryTitle = "";
+    $: categoryParentId = null;
     async function addCategory() {
-        console.log("categoryTitle", categoryTitle);
-        await invoke("add_category", { title: categoryTitle });
+        await invoke("add_category", {
+            title: categoryTitle,
+            parentId: categoryParentId,
+        });
     }
 
     let feedDialog;
@@ -99,6 +103,14 @@
                 />
                 <p>title</p>
                 <input type="text" name="title" bind:value={feedTitle} />
+                <p>Category</p>
+                <select name="category" bind:value={feedCategory}>
+                    {#each data.categories as category}
+                        <option value={category.id}>
+                            {category.title}
+                        </option>
+                    {/each}
+                </select>
                 <button>OK</button>
             </form>
         </dialog>
@@ -107,6 +119,14 @@
         <dialog bind:this={categoryDialog}>
             <button on:click={categoryDialog.close()}>x</button>
             <form method="dialog" on:submit={addCategory}>
+                <p>Parent Category</p>
+                <select name="parentId" bind:value={categoryParentId}>
+                    {#each data.categories as category}
+                        <option value={category.id}>
+                            {category.title}
+                        </option>
+                    {/each}
+                </select>
                 <p>title</p>
                 <input type="text" name="title" bind:value={categoryTitle} />
                 <button>OK</button>
