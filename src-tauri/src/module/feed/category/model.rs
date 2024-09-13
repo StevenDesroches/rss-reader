@@ -46,7 +46,7 @@ impl CategoryModel {
             .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
 
         let mut statement = connection
-            .prepare("SELECT * FROM category;")
+            .prepare("SELECT * FROM category ORDER BY COALESCE(parent_id, id), title;")
             .map_err(|e| Error::Model(e.to_string()))?;
 
         let rows = statement
