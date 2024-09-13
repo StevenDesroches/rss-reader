@@ -34,9 +34,11 @@ impl FeedController {
 
         let model_feeds = model.get_feeds()?;
         model.close()?;
+
+
         let _: Vec<_> = model_feeds
             .into_iter()
-            .map(|i| feeds.push(Feed::from_model(i.0, i.1, i.2)))
+            .map(|i| feeds.push(Feed::builder().id(i.0).title(i.1).xml_url(i.2).build()))
             .collect();
 
         Ok(feeds)

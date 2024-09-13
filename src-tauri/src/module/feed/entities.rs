@@ -64,15 +64,74 @@ pub struct Feed {
     pub(super) category_id: Option<i32>,
 }
 
+pub(super) struct FeedBuilder {
+    id: Option<i32>,
+    title: Option<String>,
+    xml_url: Option<Url>,
+    link: Option<Url>,
+    description: Option<String>,
+    articles: Option<Vec<FeedArticle>>,
+    category_id: Option<i32>,
+}
+
+impl FeedBuilder {
+    pub fn id(mut self, id: i32) -> Self {
+        self.id = Some(id);
+        self
+    }
+
+    pub fn title(mut self, title: String) -> Self {
+        self.title = Some(title);
+        self
+    }
+
+    pub fn xml_url(mut self, xml_url: Url) -> Self {
+        self.xml_url = Some(xml_url);
+        self
+    }
+
+    pub fn _link(mut self, link: Url) -> Self {
+        self.link = Some(link);
+        self
+    }
+
+    pub fn _description(mut self, description: String) -> Self {
+        self.description = Some(description);
+        self
+    }
+
+    pub fn _articles(mut self, articles: Vec<FeedArticle>) -> Self {
+        self.articles = Some(articles);
+        self
+    }
+
+    pub fn _category_id(mut self, category_id: i32) -> Self {
+        self.category_id = Some(category_id);
+        self
+    }
+
+    pub fn build(self) -> Feed {
+        Feed {
+            id: self.id,
+            title: self.title.unwrap_or("".to_string()),
+            xml_url: self.xml_url.unwrap_or("".to_string()),
+            link: self.link,
+            description: self.description,
+            articles: self.articles.expect("FeedBuilder@build MISSING ARTICLES FIELD"),
+            category_id: self.category_id,
+        }
+    }
+}
+
 impl Feed {
-    pub(super) fn from_model(id: i32, title: String, xml_url: Url) -> Self {
-        Self {
-            id: Some(id),
-            title,
-            xml_url,
+    pub(super) fn builder() -> FeedBuilder {
+        FeedBuilder {
+            id: None,
+            title: None,
+            xml_url: None,
             link: None,
             description: None,
-            articles: Vec::new(),
+            articles: None,
             category_id: None,
         }
     }
