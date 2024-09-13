@@ -1,4 +1,5 @@
-use crate::error::Result;
+// use crate::error;
+use crate::shared::errors::*;
 
 use super::{entities::Article, model::ArticleModel};
 pub(super) struct ArticleController {}

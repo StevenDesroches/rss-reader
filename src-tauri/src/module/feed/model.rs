@@ -1,5 +1,7 @@
 use super::entities::Feed;
-use crate::error::{Error, Result};
+
+use crate::error;
+use crate::shared::errors::*;
 use crate::shared::database::{Db, IDb};
 
 pub(super) struct FeedModel {
@@ -27,14 +29,14 @@ impl FeedModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         connection
             .execute(
                 "INSERT INTO feed (title, xml_url) VALUES (?1, ?2)",
                 (&feed.title, &feed.xml_url),
             )
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
         let feed_id = connection.last_insert_rowid();
 
         if feed.category_id.is_some() {
@@ -43,7 +45,7 @@ impl FeedModel {
                     "INSERT INTO feed_category_xref (feed_id, category_id) VALUES (?1, ?2)",
                     (feed_id, feed.category_id),
                 )
-                .map_err(|e| Error::Model(e.to_string()))?;
+                .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
         }
         Ok(feed_id)
     }
@@ -53,11 +55,11 @@ impl FeedModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         let mut statement = connection
             .prepare("SELECT feed.*, xref.category_id FROM feed LEFT JOIN feed_category_xref xref on xref.feed_id = feed.id;")
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
         let rows = statement
             .query_map([], |row| {
@@ -68,12 +70,12 @@ impl FeedModel {
                     row.get::<_, Option<i32>>(3)?,
                 ))
             })
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
         // let feeds: (id, title, xml_url) = rows.collect()?;
         let mut feeds: DbFeeds = Vec::new();
         for row in rows {
-            feeds.push(row.map_err(|e| Error::Model(e.to_string()))?);
+            feeds.push(row.map_err(|e| error!(ErrorType::Model(e.to_string())))?);
         }
         Ok(feeds)
     }

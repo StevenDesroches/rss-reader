@@ -1,5 +1,6 @@
-use crate::error::{Error, Result};
+use crate::error;
 use crate::shared::database::{Db, IDb};
+use crate::shared::errors::*;
 
 use super::entities::Category;
 
@@ -26,14 +27,14 @@ impl CategoryModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         connection
             .execute(
                 "INSERT INTO category (title, parent_id) VALUES (?1, ?2)",
                 (category.title, category.parent_id),
             )
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
         // let category_id = connection.last_insert_rowid();
         Ok(self)
     }
@@ -43,11 +44,11 @@ impl CategoryModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         let mut statement = connection
             .prepare("SELECT * FROM category ORDER BY COALESCE(parent_id, id), title;")
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
         let rows = statement
             .query_map([], |row| {
@@ -57,11 +58,11 @@ impl CategoryModel {
                     row.get::<_, String>(2)?,
                 ))
             })
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
         let mut categories: Vec<(i32, Option<i32>, String)> = Vec::new();
         for row in rows {
-            categories.push(row.map_err(|e| Error::Model(e.to_string()))?);
+            categories.push(row.map_err(|e| error!(ErrorType::Model(e.to_string())))?);
         }
         Ok(categories)
     }

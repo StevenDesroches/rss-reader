@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::error::{Error, Result};
-use crate::service::http::IHttp;
+use crate::error;
+use crate::shared::errors::*;
 use crate::shared::types::Url;
+use crate::service::http::IHttp;
 
 use super::article::entities::Article;
 
@@ -78,7 +79,7 @@ impl FeedBuilder {
             xml_url: self.xml_url.unwrap_or("".to_string()),
             link: self.link,
             description: self.description,
-            articles: self.articles.unwrap_or(Vec::new()),
+            articles: self.articles.unwrap_or_default(),
             category_id: self.category_id,
         }
     }
@@ -137,20 +138,20 @@ impl Feed {
         let content = http
             .fetch(&url)
             .await
-            .map_err(|e| Error::Entity(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Entity(e.to_string())))?;
 
         let reader = quick_xml::Reader::from_str(&content);
 
         let mut feed: Self = match Self::determine_feed_type(reader) {
-            FeedType::Unknown => Err(Error::XmlBadFormat)?,
+            FeedType::Unknown => Err(error!(ErrorType::XmlBadFormat))?,
             FeedType::Rss => {
                 let rss: RssFeed = quick_xml::de::from_str(&content)
-                    .map_err(|e| Error::XmlDeserialize(e.to_string()))?;
+                    .map_err(|e| error!(ErrorType::XmlDeserialize(e.to_string())))?;
                 Feed::from_rss(rss)
             }
             FeedType::Atom => {
                 let atom: AtomFeed = quick_xml::de::from_str(&content)
-                    .map_err(|e| Error::XmlDeserialize(e.to_string()))?;
+                    .map_err(|e| error!(ErrorType::XmlDeserialize(e.to_string())))?;
                 Feed::from_atom(atom)
             }
         };

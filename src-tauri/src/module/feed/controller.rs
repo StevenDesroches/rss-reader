@@ -1,9 +1,10 @@
-use crate::error::Result;
+// use crate::error;
+use crate::shared::errors::*;
+use crate::shared::types::Url;
 
 use super::article::model::ArticleModel;
 use super::entities::Feed;
 use super::model::FeedModel;
-use crate::shared::types::Url;
 pub(super) struct FeedController {}
 
 impl FeedController {

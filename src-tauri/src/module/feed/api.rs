@@ -1,8 +1,9 @@
+// use crate::error;
+use crate::shared::errors::*;
+use crate::shared::types::Url;
+
 use super::controller::FeedController;
 use super::entities::Feed;
-
-use crate::shared::types::Url;
-use crate::error::Result;
 
 use serde_json::json;
 use serde_json::Value;

@@ -1,10 +1,8 @@
 // use data_store::db::DbConnection;
 // use tauri::Manager;
 
-mod error;
 mod service;
 mod module;
-
 mod shared;
 
 // use rusqlite::Connection;

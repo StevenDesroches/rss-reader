@@ -1,5 +1,6 @@
-use crate::error::{Error, Result};
+use crate::error;
 use crate::shared::database::{Db, IDb};
+use crate::shared::errors::*;
 
 use super::entities::Article;
 
@@ -26,14 +27,14 @@ impl ArticleModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         connection
             .execute(
                 "INSERT INTO article (title, content) VALUES (?1, ?2)",
                 (article.title, article.content),
             )
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
         // let article_id = connection.last_insert_rowid();
         Ok(self)
     }
@@ -43,32 +44,32 @@ impl ArticleModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         {
             let mut article_statement = connection
                 .prepare("INSERT INTO article (title, content) VALUES (?1, ?2)")
-                .map_err(|e| Error::Model(e.to_string()))?;
+                .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
             let mut xref_statement = connection
                 .prepare("INSERT INTO feed_article_xref (feed_id, article_id) VALUES (?1, ?2)")
-                .map_err(|e| Error::Model(e.to_string()))?;
+                .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
             // let transaction = connection.transaction().map_err(|e| Error::Model(e.to_string()))?;
             connection
                 .execute("BEGIN TRANSACTION", [])
-                .map_err(|e| Error::Model(e.to_string()))?;
+                .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
             for article in articles {
                 let article_id = article_statement
                     .insert([&article.title, &article.content])
-                    .map_err(|e| Error::Model(e.to_string()))?;
+                    .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
                 xref_statement
                     .execute((feed_id, article_id))
-                    .map_err(|e| Error::Model(e.to_string()))?;
+                    .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
             }
             connection
                 .execute("Commit", [])
-                .map_err(|e| Error::Model(e.to_string()))?;
+                .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
             // transaction.commit().map_err(|e| Error::Model(e.to_string()))?;
         }
 
@@ -80,7 +81,7 @@ impl ArticleModel {
             .db
             .connection
             .as_ref()
-            .ok_or(Error::Model("DB NOT OPEN".to_string()))?;
+            .ok_or(error!(ErrorType::Model("DB NOT OPEN".to_string())))?;
 
         let mut statement = connection
             .prepare(
@@ -95,7 +96,7 @@ impl ArticleModel {
                         `id` ASC
                     ",
             )
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
         let rows = statement
             .query_map([feed_id], |row| {
                 Ok((
@@ -104,11 +105,11 @@ impl ArticleModel {
                     row.get::<_, String>(2)?,
                 ))
             })
-            .map_err(|e| Error::Model(e.to_string()))?;
+            .map_err(|e| error!(ErrorType::Model(e.to_string())))?;
 
         let mut articles: Vec<(i32, String, String)> = Vec::new();
         for row in rows {
-            articles.push(row.map_err(|e| Error::Model(e.to_string()))?);
+            articles.push(row.map_err(|e| error!(ErrorType::Model(e.to_string())))?);
         }
         Ok(articles)
     }

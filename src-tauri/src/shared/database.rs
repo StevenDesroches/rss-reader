@@ -1,5 +1,5 @@
-use crate::error::Error;
-use crate::error::Result;
+use crate::error;
+use crate::shared::errors::*;
 use rusqlite::Connection;
 
 pub trait IDb {
@@ -19,7 +19,7 @@ impl IDb for Db {
 
     fn open(&mut self) -> Result<&mut Self> {
         let path = "db.sqlite";
-        let connection = Connection::open(path).map_err(|e| Error::Db(e.to_string()))?;
+        let connection = Connection::open(path).map_err(|e| error!(ErrorType::Db(e.to_string())))?;
         self.connection = Some(connection);
         Ok(self)
     }

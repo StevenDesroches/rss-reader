@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-// use crate::error::{Error, Result};
-
+// use crate::shared::errors::*;
 use super::super::entities;
 use entities::AtomEntry;
 use entities::Item;
