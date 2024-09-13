@@ -6,6 +6,8 @@ pub(super) struct FeedModel {
     db: Db,
 }
 
+type DbFeeds = Vec<(i32, String, String, Option<i32>)>;
+
 impl FeedModel {
     pub fn new() -> Self {
         FeedModel { db: Db::new() }
@@ -73,7 +75,8 @@ impl FeedModel {
         Ok(self)
     }
 
-    pub fn get_feeds(&self) -> Result<Vec<(i32, String, String)>> {
+    
+    pub fn get_feeds(&self) -> Result<DbFeeds> {
         let connection = self
             .db
             .connection
@@ -90,12 +93,13 @@ impl FeedModel {
                     row.get::<_, i32>(0)?,
                     row.get::<_, String>(1)?,
                     row.get::<_, String>(2)?,
+                    row.get::<_, Option<i32>>(3)?,
                 ))
             })
             .map_err(|e| Error::Model(e.to_string()))?;
 
         // let feeds: (id, title, xml_url) = rows.collect()?;
-        let mut feeds: Vec<(i32, String, String)> = Vec::new();
+        let mut feeds: DbFeeds = Vec::new();
         for row in rows {
             feeds.push(row.map_err(|e| Error::Model(e.to_string()))?);
         }

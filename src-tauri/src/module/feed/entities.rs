@@ -105,7 +105,7 @@ impl FeedBuilder {
         self
     }
 
-    pub fn _category_id(mut self, category_id: i32) -> Self {
+    pub fn category_id(mut self, category_id: i32) -> Self {
         self.category_id = Some(category_id);
         self
     }
@@ -117,7 +117,7 @@ impl FeedBuilder {
             xml_url: self.xml_url.unwrap_or("".to_string()),
             link: self.link,
             description: self.description,
-            articles: self.articles.expect("FeedBuilder@build MISSING ARTICLES FIELD"),
+            articles: self.articles.unwrap_or(Vec::new()),
             category_id: self.category_id,
         }
     }

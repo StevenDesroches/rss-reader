@@ -35,10 +35,15 @@ impl FeedController {
         let model_feeds = model.get_feeds()?;
         model.close()?;
 
-
         let _: Vec<_> = model_feeds
             .into_iter()
-            .map(|i| feeds.push(Feed::builder().id(i.0).title(i.1).xml_url(i.2).build()))
+            .map(|i| {
+                let feed = match i.3 {
+                    Some(category_id) =>  Feed::builder().id(i.0).title(i.1).xml_url(i.2).category_id(category_id).build(),
+                    None =>  Feed::builder().id(i.0).title(i.1).xml_url(i.2).build(),
+                };
+                feeds.push(feed);
+            })
             .collect();
 
         Ok(feeds)
